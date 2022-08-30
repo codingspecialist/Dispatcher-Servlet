@@ -1,9 +1,13 @@
 package site.metacoding.ds;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 public class UserController {
 	
 	@RequestMapping("/join")
-	public void join() {
+	public void join(HttpServletRequest req, HttpServletResponse resp) {
+		System.out.println(req.getRequestURL()+" : ");
 		System.out.println("join 호출됨");
 	}
 	
