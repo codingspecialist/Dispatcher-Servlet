@@ -1,6 +1,8 @@
 package site.metacoding.ds;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -34,19 +36,28 @@ public class DispatcherServlet extends HttpServlet{
 	private void doProcess(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		System.out.println("doProcess 요청됨");
 		String httpMethod = req.getMethod();
-		System.out.println(httpMethod);
+		//System.out.println(httpMethod);
 		String identifier = req.getRequestURI();
-		System.out.println(identifier);
+		//System.out.println(identifier);
 		
 		// 공통 로직 처리
-		
 		UserController c = new UserController();
-		if(identifier.equals("/join")) {
-			c.join();
-		}else if(identifier.equals("/login")) {
-			c.login();
-		}else {
-			System.out.println("잘못된 요청입니다.");
+		
+		Method[] methodList = c.getClass().getDeclaredMethods();
+		for (Method method : methodList) {
+			//System.out.println(method.getName());
+			Annotation annotation = 
+					method.getDeclaredAnnotation(RequestMapping.class);
+			RequestMapping requestMapping = (RequestMapping) annotation;
+			try {
+				//System.out.println(requestMapping.value());
+				if(identifier.equals(requestMapping.value())) {
+					method.invoke(c);
+				}
+			} catch (Exception e) {
+				System.out.println(method.getName()+"은 어노테이션이 없습니다.");
+			}
+			
 		}
 	}
 }
